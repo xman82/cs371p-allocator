@@ -63,7 +63,7 @@ class Allocator {
         //method view, int->char
         //----------------------
 
-        char& view1 (int& i) {
+        char& view (int& i) {
           return *reinterpret_cast<char*>(&i);}
 
     private:
@@ -108,19 +108,19 @@ class Allocator {
             bool str_neg=false;
 
             while(i < N) {
-              str_sntl=view( (a+i) );
+              str_sntl=view( *(a+i) );  //*(a+i) == a[i];
               if(str_sntl < 0) {
                 str_sntl-=(2*str_stnl); //look for easy negate
                 str_neg=true;
               }
-              end_sntl=view( a+(i+stnl_size+str_stnl) );
+              end_sntl=view( *(a+(i+stnl_size+str_stnl)) );
               if(end_sntl < 0) {
                 end_sntl-=(2*end_stnl); //again, look for easy (-)
                 end_neg=true;
               }
-              if( (str_sntl != end_sntl) || ( end_neg != str_neg ) ) //or..?
+              if( (str_sntl != end_sntl) || ( end_neg != str_neg ) )
                 return false;
-              i+=str_sntl+(2*sntl_size);
+              i+=str_sntl+(2*sntl_size);	//set i past (sentinel,block,sentinel)
             }
             if(i!=N)
               return false;
@@ -137,12 +137,11 @@ class Allocator {
 * <your documentation>
 */
         Allocator () {
-            int stnli=N-(2*stnl_size);
-            char* stnlc = &view1(stnli);
-            a[0]=*stnlc;
+            int stnlV=N-(2*stnl_size);
+            a[0]=view(stnlV);			//set first sentinel
             zero_set(0);
-            a[stnli+stnl_size]=*stnlc;
-            zero_set(stnli+stnlsize);
+            a[stnl_size + stnlV]=view(stnlV);	//set second sentinel
+            //zero_set(stnli+stnlsize);//not sure if necessary...
             assert(valid());}
 
         // Default copy, destructor, and copy assignment
@@ -164,31 +163,47 @@ class Allocator {
 */
         pointer allocate (size_type n) {
             assert(n > 0);
-            int i=0;
-            int k=1;
 
-            int tmp=view(a);		//view(a[0]);?
+            int tmp=0;
             int spc=n * t_size;		//blocks requested
             int tmp_spc=0;
             
+            int i=0;
+            int k=1;
+
             while(i < N) {
-              tmp=view(a[i]);		//view(a+i)?
+              tmp=view(*(a+i));				//next block's sentinel value
 
-              if(tmp > 0 && (tmp-spc) >= min_blk) {
-                tmp_spc-= spc;
-                a[i]=*reinterpret_cast<char*>(&tmp_spc);
-                a[i + stnl_size + spc]=*reinterpret_cast<char*>(&tmp_spc);
+              if(tmp > 0 && (tmp - spc ) >= min_blk) {
+                tmp_spc-=spc;				//new sentinel's value
 
-                tmp-=(spc + stnl_size + stnl_size);
-                a[i + (2 * stnl_size)]=*reinterpret_cast<char*>(&tmp);
-                a[i + (3 * stnl_size) + tmp]=*reinterpret_cast<char*>(&tmp);
+                a[i]=view(tmp_spc);
+                a[i + stnl_size + spc]=view(tmp_spc);
+
+                tmp-=(stnl_size + spc + stnl_size);	//remainder free blocks
+                a[i + stnl_size + spc + stnl_size]=view(tmp);
+                a[i + stnl_size + spc + stnl_size + stnl_size + tmp]=view(tmp);
+
                 assert(valid());
-                return reinterpret_cast<pointer)(&a[i + stnl_size]);
+                return reinterpret_cast<pointer>(&a[i + stnl_size]);
               }
-              i=abs(tmp) + (2 * stnl_size);
+              i=stnl_size + abs(tmp) + stnl_size;
+            }
+            i=0;
+            tmp_spc=0;
+            while(i < N) {
+              tmp=view(*(a+i));
+              if(tmp > 0 && (tmp - spc) >= 0) {		//less than minblk would remain
+                tmp_spc-= tmp;
+                a[i]=view(tmp_spc);			//give the entire free block in this case
+                a[i + stnl_size + tmp]=view(tmp_spc);
+
+                assert(valid());
+                return reinterpret_cast<pointer>(&a[i + stnl_size]);
+              }
             }
             throw std::bad_alloc(); //if no return w/in while, alloc failed
-            return 0;} // replace!
+            return 0;}
 
         // ---------
         // construct
@@ -210,28 +225,39 @@ class Allocator {
         /**
 * O(1) in space
 * O(1) in time
-* <your documentation>
+* the sentinel values of the block are reset to positive
+* the previous and next blocks (if they exist) are checked
+* if either block is a free block, it is coalesced with the
+* current block which begins at p 
 * after deallocation adjacent free blocks must be coalesced
 */
         void deallocate (pointer p, size_type) {
-            int i=(reintrpret_cast<char*>(p) - &a[0]);            
+            int i=reinterpret_cast<char*>(p) - a;            
             assert(&a[i] == reinterpret_cast<char*>(p));
+	    assert(i > stnl_size);
             int sntlV=view(a[i - stnl_size]);
             assert(sntlV < 0);
 
             stnlV=abs(sntlV);
-            a[i - stnl_size] = *reinterpret_cast<char*>(&sntlV);
-            a[i + sntlV] = *reinterpret_cast<char*>(&sntlV);
+            int tmp_sntlV=0;
+            if((i-stnl_size) >= minblk && view(a[i-(2*sntl_size)]) >= 0) {
+              tmp_sntlV=view(a[i - (2*stnl_size)]);
+              assert(tmp_sntlV == view(a[i - (3*stnl_size) - tmp_sntlV]));
+              
+              sntlV+=(2 * sntl_size) + tmp_sntlV;			//sntlV now size of prev block & current (just deallocated) block
+              i-= (2 * stnl_size - tmp_sntlV);				//i now set to beginning of new block (from prev + current)
+            }
+
+            if(N-(i+sntlV+sntl_size) >= minblk && view(a[i + sntlV + sntl_size]) >= 0) {
+              tmp_sntlV=view(a[i + sntlV + sntl_size]);
+              assert(tmp_sntlV == view(a[i + tmp_sntlV + (2 * sntl_size)]));
+
+              sntlV+=(2 * sntl_size) + tmp_sntlV;			//sntlV now size of current(just deallocated) & next block
+	    }
+
+            a[i - stnl_size] = view(sntlV);
+            a[i + sntlV] = view(sntlV);
             assert(valid());
-
-            i=0;
-            int tmp;
-            while(i<N) {
-              tmp=view(a[i]);
-              if(tmp>0) {
-
-              }
-           }
         }
 
         // -------
