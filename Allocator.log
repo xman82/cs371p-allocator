@@ -1,0 +1,95 @@
+commit 873b6f7e0eb0403e928be1d01038c7a85102e82f
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 03:42:11 2013 -0500
+
+    deleted unnecessary line(s)
+
+commit 4dc67e45e65a42f03c5b184188939e3252193720
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 03:41:14 2013 -0500
+
+    fixes #3
+
+commit cba7415aa8987b785d83d3e5b8eafbe4d0193977
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 03:40:32 2013 -0500
+
+    output for tests
+
+commit 51784d1c74df83f95ce6ae90058130a3abe55647
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 03:28:00 2013 -0500
+
+    formatted better, fixes #11
+
+commit 0a699a83782ce42ca1291b755868fbdef3e339e4
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 03:14:39 2013 -0500
+
+    corresponds w/ updated TestAllocator
+
+commit e7cb2ea72896d47ec0b8a46eb313d88e4fdabf03
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 03:13:50 2013 -0500
+
+    fixes #2
+
+commit 9749cb80f5fa9513b565fc7c2ebbfd46c5ad6e6d
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Thu Oct 24 02:02:09 2013 -0500
+
+    Allocator functions work, finally
+
+commit 9e2d8aab5ae468edc9b198789616904aa2c8ab3e
+Author: Xavier Barrios <xman375@cs.utexas.edu>
+Date:   Wed Oct 23 21:30:17 2013 -0500
+
+    fixes #8
+
+commit 11cb895276c5f54ba2114b394d33f2f95e475572
+Author: xman82 <xavier82@utexas.edu>
+Date:   Wed Oct 23 19:56:24 2013 -0500
+
+    first test added, need to test
+
+commit 054e7b9a1da7d962cd15c5f9f2f8e640d418f2bc
+Author: xman82 <xavier82@utexas.edu>
+Date:   Wed Oct 23 19:31:01 2013 -0500
+
+    main allocator file renamed
+
+commit 914e006f108685d24429eda1fb4951eef6e8230f
+Author: xman82 <xavier82@utexas.edu>
+Date:   Wed Oct 23 19:30:09 2013 -0500
+
+    view methods made private
+
+commit f225aa5b2eae60aa9ec373dce1cc79c0bb0c6d17
+Author: xman82 <xavier82@utexas.edu>
+Date:   Wed Oct 23 18:46:41 2013 -0500
+
+    testallocator added
+
+commit 3ff76d55aeea141eec9f41a48d7dd16033fdea53
+Author: xman82 <xavier82@utexas.edu>
+Date:   Wed Oct 23 18:05:43 2013 -0500
+
+    makefile added
+
+commit 0a412ff6fa58106935c77404fd33f1e7976f44d0
+Author: xman82 <xavier82@utexas.edu>
+Date:   Wed Oct 23 17:23:48 2013 -0500
+
+    finished deallocate method
+
+commit dbf0359dd38a03d428ff17763eaf95d5e2ec490e
+Author: xman82 <xavier82@utexas.edu>
+Date:   Tue Oct 22 22:36:48 2013 -0500
+
+    first allocator.h commit
+
+commit aefbad71c691796a9023ea5b9963b140764b19ac
+Author: Xavier <xman375@Stormageddon9116.(none)>
+Date:   Tue Oct 22 22:27:48 2013 -0500
+
+    firstcommit
