@@ -70,6 +70,14 @@ class Allocator {
         char& view (int& i) {
           return *reinterpret_cast<char*>(&i);}
 
+        //--------
+        //zero_set
+        //--------
+
+        /**
+         *sets the bytes of sentinel not needed to zero
+         */
+
         void zero_set(size_type index){
           int k=1;
           while(k < sntl_size) {
@@ -84,10 +92,11 @@ class Allocator {
         // -----
 
         /**
-* O(1) in space
-* O(n) in time
-* <your documentation>
-*/
+         * O(1) in space
+         * O(n) in time
+         * iterates through the array, ensuring the sentinels
+         * match in size and sign.
+         */
         bool valid () const{
             int i=0;
             int str_sntl=0;
@@ -121,10 +130,11 @@ class Allocator {
         // ------------
 
         /**
-* O(1) in space
-* O(1) in time
-* <your documentation>
-*/
+         * O(1) in space
+         * O(1) in time
+         * Initiates the sentinels of the array
+         * to N - size of both sentinels
+         */
         Allocator () {
             int sntlV=N-(2*sntl_size);
             a[0]=view(sntlV);			//set first sentinel
@@ -143,13 +153,13 @@ class Allocator {
         // --------
 
         /**
-* O(1) in space
-* O(n) in time
-* <your documentation>
-* after allocation there must be enough space left for a valid block
-* the smallest allowable block is sizeof(T) + (2 * sizeof(int))
-* choose the first block that fits
-*/
+         * O(1) in space
+         * O(n) in time
+         * <your documentation>
+         * after allocation there must be enough space left for a valid block
+         * the smallest allowable block is sizeof(T) + (2 * sizeof(int))
+         * choose the first block that fits
+         */
         pointer allocate (size_type n) {
             if(n <= 0 || (n*t_size) > (N-(2*sntl_size)))
               throw std::bad_alloc();
@@ -206,10 +216,10 @@ class Allocator {
         // ---------
 
         /**
-* O(1) in space
-* O(1) in time
-* <your documentation>
-*/
+         * O(1) in space
+         * O(1) in time
+         * <your documentation>
+         */
         void construct (pointer p, const_reference v) {
             new (p) T(v); // this is correct and exempt
             assert(valid());} // from the prohibition of new
@@ -219,14 +229,14 @@ class Allocator {
         // ----------
 
         /**
-* O(1) in space
-* O(1) in time
-* the sentinel values of the block are reset to positive
-* the previous and next blocks (if they exist) are checked
-* if either block is a free block, it is coalesced with the
-* current block which begins at p 
-* after deallocation adjacent free blocks must be coalesced
-*/
+         * O(1) in space
+         * O(1) in time
+         * the sentinel values of the block are reset to positive
+         * the previous and next blocks (if they exist) are checked
+         * if either block is a free block, it is coalesced with the
+         * current block which begins at p 
+         * after deallocation adjacent free blocks must be coalesced
+         */
         void deallocate (pointer p, size_type) {
             int i=reinterpret_cast<char*>(p) - a;            
             assert(&a[i] == reinterpret_cast<char*>(p));
