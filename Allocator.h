@@ -151,7 +151,7 @@ class Allocator {
 * choose the first block that fits
 */
         pointer allocate (size_type n) {
-            if(n <= 0)
+            if(n <= 0 || (n*t_size) > (N-(2*sntl_size)))
               throw std::bad_alloc();
 
             int tmp=0;
@@ -256,6 +256,16 @@ class Allocator {
             zero_set(i + sntlV);
             assert(valid());
         }
+
+        // -------
+        // isValid
+        // -------
+        
+        /**
+         * calls valid
+         */
+        bool isValid() {
+          return valid();}
 
         // -------
         // destroy
