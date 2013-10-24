@@ -36,10 +36,6 @@ To test the program:
 
 #include "gtest/gtest.h"
 
-#define private public
-#define protected public
-#define class struct
-
 #include "Allocator.h"
 
 // -------------
@@ -111,10 +107,10 @@ TYPED_TEST(TestAllocator, Ten) {
             x.destroy(e);}
         x.deallocate(b, s);}}
 
-TEST(Allocator, dealloc1) {
+TEST(TestAllocator, dealloc1) {
   Allocator<int,100> x;
-  const pointer p1 = x.allocate(32);
-  x.deallocate(p1);
-  const pointer p2 = x.allocate(20);
+  int* p1 = x.allocate(3);
+  x.deallocate(p1, 3);
+  int* p2 = x.allocate(2);
   ASSERT_EQ(p1, p2);
 }
