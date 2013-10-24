@@ -32,8 +32,13 @@ To test the program:
 
 #include <algorithm> // count
 #include <memory>    // allocator
+#include <iostream>  //cout
 
 #include "gtest/gtest.h"
+
+#define private public
+#define protected public
+#define class struct
 
 #include "Allocator.h"
 
@@ -105,4 +110,3 @@ TYPED_TEST(TestAllocator, Ten) {
             --e;
             x.destroy(e);}
         x.deallocate(b, s);}}
-

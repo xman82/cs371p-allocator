@@ -51,20 +51,6 @@ class Allocator {
 
         friend bool operator != (const Allocator& lhs, const Allocator& rhs) {
             return !(lhs == rhs);}
-        
-        //----------------------
-        //method view, char->int
-        //----------------------
-
-        int& view (char& c) {
-          return *reinterpret_cast<int*>(&c);}
-
-        //----------------------
-        //method view, int->char
-        //----------------------
-
-        char& view (int& i) {
-          return *reinterpret_cast<char*>(&i);}
 
     private:
         // ----
@@ -75,22 +61,6 @@ class Allocator {
         const static size_type t_size= sizeof(T);
         const static size_type sntl_size= sizeof(size_type);  //sentinel size
         const static size_type min_blk= 2*(sntl_size)+t_size; //min space req for an allocate
-
-        // --------
-        // zero_set
-        // --------
-
-        /**
-        * sets stnl_size-1 elements to 0 at a[index]
-        */
-        void zero_set(size_type index) {
-          int k=1;
-          while(k < stnl_size) {
-            a[index+k]=0;
-            ++k;
-          }
-          return;
-        }
 
         // -----
         // valid
@@ -125,6 +95,20 @@ class Allocator {
             if(i!=N)
               return false;
             return true;}
+
+        //----------------------
+        //method view, char->int
+        //----------------------
+
+        int& view (char& c) {
+          return *reinterpret_cast<int*>(&c);}
+
+        //----------------------
+        //method view, int->char
+        //----------------------
+
+        char& view (int& i) {
+          return *reinterpret_cast<char*>(&i);}
 
     public:
         // ------------
@@ -265,12 +249,20 @@ class Allocator {
         // -------
 
         /**
-* O(1) in space
-* O(1) in time
-* <your documentation>
-*/
+         * O(1) in space
+         * O(1) in time
+         * <your documentation>
+         */
         void destroy (pointer p) {
             p->~T(); // this is correct
             assert(valid());}};
+
+        /**
+         * O(1) in space
+         * O(1) in time
+         * <your documentation>
+         */
+        const int& view (int i) const {
+            return *reinterpret_cast<const int*>(&a[i]);}};
 
 #endif // Allocator_h
