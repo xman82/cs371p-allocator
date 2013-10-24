@@ -76,16 +76,17 @@ class Allocator {
             int str_sntl=0;
             int end_sntl=0;
             bool str_neg=false;
+            bool end_neg=false;
 
             while(i < N) {
               str_sntl=view( *(a+i) );  //*(a+i) == a[i];
               if(str_sntl < 0) {
-                str_sntl-=(2*str_stnl); //look for easy negate
+                str_sntl-=(2 * str_sntl); //look for easy negate
                 str_neg=true;
               }
-              end_sntl=view( *(a+(i+stnl_size+str_stnl)) );
+              end_sntl=view( *(a+(i+sntl_size+str_sntl)) );
               if(end_sntl < 0) {
-                end_sntl-=(2*end_stnl); //again, look for easy (-)
+                end_sntl-=(2*end_sntl); //again, look for easy (-)
                 end_neg=true;
               }
               if( (str_sntl != end_sntl) || ( end_neg != str_neg ) )
@@ -121,10 +122,10 @@ class Allocator {
 * <your documentation>
 */
         Allocator () {
-            int stnlV=N-(2*stnl_size);
-            a[0]=view(stnlV);			//set first sentinel
-            zero_set(0);
-            a[stnl_size + stnlV]=view(stnlV);	//set second sentinel
+            int sntlV=N-(2*sntl_size);
+            a[0]=view(sntlV);			//set first sentinel
+            //zero_set(0);
+            a[sntl_size + sntlV]=view(sntlV);	//set second sentinel
             //zero_set(stnli+stnlsize);//not sure if necessary...
             assert(valid());}
 
@@ -162,16 +163,16 @@ class Allocator {
                 tmp_spc-=spc;				//new sentinel's value
 
                 a[i]=view(tmp_spc);
-                a[i + stnl_size + spc]=view(tmp_spc);
+                a[i + sntl_size + spc]=view(tmp_spc);
 
-                tmp-=(stnl_size + spc + stnl_size);	//remainder free blocks
-                a[i + stnl_size + spc + stnl_size]=view(tmp);
-                a[i + stnl_size + spc + stnl_size + stnl_size + tmp]=view(tmp);
+                tmp-=(sntl_size + spc + sntl_size);	//remainder free blocks
+                a[i + sntl_size + spc + sntl_size]=view(tmp);
+                a[i + sntl_size + spc + sntl_size + sntl_size + tmp]=view(tmp);
 
                 assert(valid());
-                return reinterpret_cast<pointer>(&a[i + stnl_size]);
+                return reinterpret_cast<pointer>(&a[i + sntl_size]);
               }
-              i=stnl_size + abs(tmp) + stnl_size;
+              i=sntl_size + abs(tmp) + sntl_size;
             }
             i=0;
             tmp_spc=0;
@@ -180,10 +181,10 @@ class Allocator {
               if(tmp > 0 && (tmp - spc) >= 0) {		//less than minblk would remain
                 tmp_spc-= tmp;
                 a[i]=view(tmp_spc);			//give the entire free block in this case
-                a[i + stnl_size + tmp]=view(tmp_spc);
+                a[i + sntl_size + tmp]=view(tmp_spc);
 
                 assert(valid());
-                return reinterpret_cast<pointer>(&a[i + stnl_size]);
+                return reinterpret_cast<pointer>(&a[i + sntl_size]);
               }
             }
             throw std::bad_alloc(); //if no return w/in while, alloc failed
@@ -218,28 +219,28 @@ class Allocator {
         void deallocate (pointer p, size_type) {
             int i=reinterpret_cast<char*>(p) - a;            
             assert(&a[i] == reinterpret_cast<char*>(p));
-	    assert(i > stnl_size);
-            int sntlV=view(a[i - stnl_size]);
+	      assert(i > sntl_size);
+            int sntlV=view(a[i - sntl_size]);
             assert(sntlV < 0);
 
-            stnlV=abs(sntlV);
+            sntlV=abs(sntlV);
             int tmp_sntlV=0;
-            if((i-stnl_size) >= minblk && view(a[i-(2*sntl_size)]) >= 0) {
-              tmp_sntlV=view(a[i - (2*stnl_size)]);
-              assert(tmp_sntlV == view(a[i - (3*stnl_size) - tmp_sntlV]));
+            if((i-sntl_size) >= min_blk && view(a[i-(2*sntl_size)]) >= 0) {
+              tmp_sntlV=view(a[i - (2*sntl_size)]);
+              assert(tmp_sntlV == view(a[i - (3*sntl_size) - tmp_sntlV]));
               
               sntlV+=(2 * sntl_size) + tmp_sntlV;			//sntlV now size of prev block & current (just deallocated) block
-              i-= (2 * stnl_size - tmp_sntlV);				//i now set to beginning of new block (from prev + current)
+              i-= (2 * sntl_size - tmp_sntlV);				//i now set to beginning of new block (from prev + current)
             }
 
-            if(N-(i+sntlV+sntl_size) >= minblk && view(a[i + sntlV + sntl_size]) >= 0) {
+            if(N-(i+sntlV+sntl_size) >= min_blk && view(a[i + sntlV + sntl_size]) >= 0) {
               tmp_sntlV=view(a[i + sntlV + sntl_size]);
               assert(tmp_sntlV == view(a[i + tmp_sntlV + (2 * sntl_size)]));
 
               sntlV+=(2 * sntl_size) + tmp_sntlV;			//sntlV now size of current(just deallocated) & next block
 	    }
 
-            a[i - stnl_size] = view(sntlV);
+            a[i - sntl_size] = view(sntlV);
             a[i + sntlV] = view(sntlV);
             assert(valid());
         }
