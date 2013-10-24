@@ -107,10 +107,93 @@ TYPED_TEST(TestAllocator, Ten) {
             x.destroy(e);}
         x.deallocate(b, s);}}
 
-TEST(TestAllocator, dealloc1) {
+//-------------
+//valid() tests
+//-------------
+
+TEST(TestAllocator, valid_1){
+  Allocator<double, 50> x;
+  ASSERT_EQ(x.isValid(), true);
+}
+
+TEST(TestAllocator, valid_2){
+  Allocator<char, 100> x;
+  char* p1 = x.allocate(84);
+  ASSERT_EQ(x.isValid(), true);
+}
+
+TEST(TestAllocator, valid_3){
+  Allocator<int, 100> x;
+  int* p1 = x.allocate(5);
+  int* p2 = x.allocate(10);
+  int* p3 = x.allocate(4);
+  ASSERT_EQ(x.isValid(), true);
+}
+
+//----------------
+//allocate() tests
+//----------------
+
+TEST(TestAllocator, allocate_1){
+  Allocator<char, 50> x;
+  try{
+    char* p1 = x.allocate(50);
+    ASSERT_EQ(0,5);
+  }
+  catch(std::bad_alloc&){
+    ASSERT_EQ(0,0);}
+}
+
+TEST(TestAllocator, allocate_2){
+  Allocator<int, 50> x;
+  try{
+    int* p1 = x.allocate(1);
+    ASSERT_EQ(0,0);
+  }
+  catch(std::bad_alloc&) {
+    ASSERT_EQ(1,0);
+  }
+}
+
+TEST(TestAllocator, allocate_3){
+  Allocator<char, 50> x;
+  char* p1 = x.allocate(34);
+  try{
+    char* p2 = x.allocate(1);
+    ASSERT_EQ(0,1);  
+  }
+  catch(std::bad_alloc&) {
+    ASSERT_EQ(0,0);
+  }
+}
+
+//------------------
+//deallocate() tests
+//------------------
+
+TEST(TestAllocator, deallocate_1) {
   Allocator<int,100> x;
   int* p1 = x.allocate(3);
   x.deallocate(p1, 3);
   int* p2 = x.allocate(2);
   ASSERT_EQ(p1, p2);
+}
+
+TEST(TestAllocator, deallocate_2) {
+  Allocator<int, 100> x;
+  int* p1 = x.allocate(20);
+  x.deallocate(p1, 20);
+  int* p2 = x.allocate(3);
+
+  ASSERT_EQ(p1, p2);
+}
+
+TEST(TestAllocator, deallocate_3) {
+  Allocator<char, 100> x;
+  char* p1 = x.allocate(30);
+  char* p2 = x.allocate(2);
+  x.deallocate(p2, 2);
+  char* p3 = x.allocate(5);
+  
+  ASSERT_EQ(p2, p3);
 }
