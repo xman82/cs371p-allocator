@@ -69,6 +69,10 @@ class Allocator {
           return *reinterpret_cast<int*>(&c);}
         char& view (int& i) {
           return *reinterpret_cast<char*>(&i);}
+////////////////////////////////////////////////////////
+        int& view2 (int i) {
+          return *reinterpret_cast<int*>(&a[i]);}
+///////////////////////////////////////////////////////
 
         //--------
         //zero_set
@@ -165,7 +169,7 @@ class Allocator {
               throw std::bad_alloc();
 
             int tmp=0;
-            int spc=n * t_size;		//blocks requested
+            int spc=n * t_size;      //blocks requested
             int tmp_spc=0;
             
             int i=0;
@@ -174,7 +178,7 @@ class Allocator {
               tmp=(int)a[i];				//next block's sentinel value
 
               if(tmp > 0 && (tmp - spc ) >= min_blk) {
-                tmp_spc=0-spc;				//new sentinel's value
+                tmp_spc=0-spc;			//new sentinel's value
 
                 a[i]=view(tmp_spc);
                 zero_set(i);
@@ -198,7 +202,7 @@ class Allocator {
               tmp=(int)a[i];
               if(tmp > 0 && (tmp - spc) >= 0) {		//less than minblk would remain
                 tmp_spc-= tmp;
-                a[i]=view(tmp_spc);			//give the entire free block in this case
+                a[i]=view(tmp_spc); //give the entire free block in this case
                 zero_set(i);
                 a[i + sntl_size + tmp]=view(tmp_spc);
                 zero_set(i + sntl_size + tmp);
