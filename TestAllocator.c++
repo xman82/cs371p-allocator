@@ -110,3 +110,11 @@ TYPED_TEST(TestAllocator, Ten) {
             --e;
             x.destroy(e);}
         x.deallocate(b, s);}}
+
+TEST(Allocator, dealloc1) {
+  Allocator<int,100> x;
+  const pointer p1 = x.allocate(32);
+  x.deallocate(p1);
+  const pointer p2 = x.allocate(20);
+  ASSERT_EQ(p1, p2);
+}
