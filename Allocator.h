@@ -69,10 +69,6 @@ class Allocator {
           return *reinterpret_cast<int*>(&c);}
         char& view (int& i) {
           return *reinterpret_cast<char*>(&i);}
-////////////////////////////////////////////////////////
-        int& view2 (int i) {
-          return *reinterpret_cast<int*>(&a[i]);}
-///////////////////////////////////////////////////////
 
         //--------
         //zero_set
